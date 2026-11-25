@@ -1,0 +1,100 @@
+/* Reading surface: the hierarchy is spacing and type, not another card. */
+#post_detail .postTitle { margin:0 0 12px; padding:0; border:0; font:650 31px/1.3 var(--font-sans); letter-spacing:-.025em; overflow-wrap:anywhere; }
+#post_detail .postTitle a { color:var(--ink-primary); text-decoration:none; }
+.ctp-post-meta, .ctp-reading-stats { display:flex; flex-wrap:wrap; align-items:baseline; gap:.25em 1.2em; }
+.ctp-post-meta { margin-bottom:32px; color:var(--ink-muted); font:13px/1.65 var(--font-sans); }
+#cnblogs_post_body { margin:0; color:var(--ink-primary); font:16px/1.76 var(--font-sans); overflow-wrap:anywhere; }
+#cnblogs_post_body :is(h1,h2,h3,h4,h5,h6) { color:var(--ink-primary); font-family:var(--font-sans); font-weight:650; line-height:1.35; border:0; padding:0; }
+#cnblogs_post_body h1 { margin:1.85em 0 .65em; font-size:25px; }
+#cnblogs_post_body h2 { margin:2.25em 0 .7em; font-size:22px; }
+#cnblogs_post_body h3 { margin:1.8em 0 .6em; font-size:18px; }
+#cnblogs_post_body p { margin:.8em 0; font-size:inherit; line-height:inherit; }
+#cnblogs_post_body a, .ctp-copyright a, #post_next_prev a { color:var(--link); text-decoration:underline; text-decoration-color:var(--link-underline); text-underline-offset:.2em; }
+#cnblogs_post_body a:hover, .ctp-copyright a:hover { text-decoration-color:currentColor; }
+#cnblogs_post_body :not(pre) > code { color:var(--ink-primary); background:var(--bg-subtle); border:0; border-radius:3px; padding:.08em .28em; font:.9em var(--font-mono); }
+#cnblogs_post_body :is(blockquote,.ctp-callout-success,.ctp-callout-info,.ctp-callout-tip,.ctp-callout-warning,.ctp-callout-danger,.markdown-alert) {
+  padding:.7em 1.15em; margin:1.35em 0; color:var(--ink-primary); border:0; border-inline-start:3px solid var(--callout-stripe,var(--accent)); background:var(--bg-rail);
+}
+#cnblogs_post_body :is(.ctp-callout-success,.markdown-alert-success) { --callout-stripe:var(--ctp-green); }
+#cnblogs_post_body :is(.ctp-callout-info,.markdown-alert-note) { --callout-stripe:var(--ctp-blue); }
+#cnblogs_post_body :is(.ctp-callout-tip,.markdown-alert-tip) { --callout-stripe:var(--ctp-teal); }
+#cnblogs_post_body :is(.ctp-callout-warning,.markdown-alert-warning) { --callout-stripe:var(--ctp-yellow); }
+#cnblogs_post_body :is(.ctp-callout-danger,.markdown-alert-caution) { --callout-stripe:var(--ctp-red); }
+#cnblogs_post_body :is(mjx-container,.MathJax,.MathJax_Display,.katex,.katex-display) { color:var(--ink-primary); max-width:100%; }
+#cnblogs_post_body :is(mjx-container[display="true"],.MathJax_Display,.katex-display) { overflow-x:auto; }
+@media (width < 960px) { #post_detail .postTitle { font-size:25px; } }
+#cnblogs_post_body img { max-width:100% !important; height:auto; }
+#cnblogs_post_body pre, #cnblogs_post_body .cnblogs_code, .ctp-table-scroll { max-width:100%; overflow-x:auto; }
+#cnblogs_post_body pre { white-space:pre; overflow-wrap:normal; }
+.ctp-table-scroll { margin:1.25em 0; }
+#cnblogs_post_body .ctp-table-scroll > table { width:max-content; min-width:100%; border-collapse:collapse; margin:0; }
+#cnblogs_post_body .ctp-table-scroll :is(th,td) { padding:.45em .8em; text-align:start; border:1px solid var(--border-subtle); }
+#cnblogs_post_body .ctp-table-scroll th { background:var(--bg-rail); font-weight:600; }
+#cnblogs_post_body .ctp-table-scroll td { background:var(--bg-canvas); }
+#cnblogs_post_body .ctp-code { position:relative; max-width:100%; margin:1.4em 0; border:1px solid var(--border-subtle); border-radius:6px; background:var(--bg-code); }
+.ctp-code-head { display:flex; align-items:center; justify-content:space-between; height:36px; padding:0 14px; color:var(--ink-secondary); font:12px/1.4 var(--font-mono); background:var(--bg-code-head); border-radius:5px 5px 0 0; }
+.ctp-code button { color:var(--ink-secondary); font:13px var(--font-sans); background:transparent; border:0; cursor:pointer; }
+.ctp-code-head button { padding:5px 8px; }
+.ctp-code button:hover { color:var(--ink-primary); }
+#cnblogs_post_body .ctp-code pre, #cnblogs_post_body .ctp-code pre > code { border:0; border-radius:0; box-shadow:none; margin:0; color:var(--ink-primary); background:var(--bg-code); text-shadow:none; font:14px/1.65 var(--font-mono); white-space:pre; word-break:normal; overflow-wrap:normal; }
+#cnblogs_post_body .ctp-code pre { padding:14px 16px; overflow:auto; max-height:none; animation:none; transition:none; }
+#cnblogs_post_body .ctp-code pre > code { display:block; padding:0; overflow:visible; }
+#cnblogs_post_body .ctp-code :is(.cnb-code-toolbar,.cnb-over-length-code-block-toggler) { display:none; }
+#cnblogs_post_body .ctp-code .line-numbers { padding-inline-start:3.8em; }
+#cnblogs_post_body .ctp-code .line-numbers-rows > span::before, #cnblogs_post_body .ctp-code .hljs-ln-numbers { color:var(--ink-line-num); }
+/* Preserve the native highlighters' markup; map roles rather than theme sheet names. */
+#cnblogs_post_body .ctp-code :is(.hljs-keyword,.hljs-selector-tag,.hljs-doctag,.token.keyword,.token.atrule) { color:var(--ctp-mauve); }
+#cnblogs_post_body .ctp-code :is(.hljs-title,.hljs-section,.token.function,.token.function-variable) { color:var(--ctp-blue); }
+#cnblogs_post_body .ctp-code :is(.hljs-string,.hljs-addition,.token.string,.token.char,.token.attr-value,.token.inserted) { color:var(--ctp-green); }
+#cnblogs_post_body .ctp-code :is(.hljs-number,.hljs-literal,.hljs-symbol,.token.number,.token.constant,.token.boolean,.token.symbol) { color:var(--ctp-peach); }
+#cnblogs_post_body .ctp-code :is(.hljs-type,.hljs-title.class_,.token.class-name,.token.selector) { color:var(--ctp-yellow); }
+#cnblogs_post_body .ctp-code :is(.hljs-operator,.token.operator,.token.entity) { color:var(--ctp-sky); }
+#cnblogs_post_body .ctp-code :is(.hljs-params,.hljs-variable,.token.parameter,.token.variable) { color:var(--ctp-maroon); }
+#cnblogs_post_body .ctp-code :is(.hljs-built_in,.hljs-meta,.hljs-deletion,.token.builtin,.token.macro,.token.tag,.token.deleted) { color:var(--ctp-red); }
+#cnblogs_post_body .ctp-code :is(.hljs-regexp,.hljs-char.escape_,.token.regex,.token.escape) { color:var(--ctp-pink); }
+#cnblogs_post_body .ctp-code :is(.hljs-attr,.hljs-attribute,.token.property,.token.attr-name) { color:var(--ctp-teal); }
+#cnblogs_post_body .ctp-code :is(.hljs-comment,.hljs-quote,.token.comment,.token.prolog,.token.doctype,.token.cdata) { color:var(--ink-code-comment); }
+#cnblogs_post_body .ctp-code :is(.hljs-punctuation,.token.punctuation) { color:var(--ink-secondary); }
+#cnblogs_post_body .ctp-code-folded pre { max-height:calc(28px + var(--visible-lines) * 1.65em); overflow-y:hidden; }
+.ctp-code-fold { position:relative; display:block; width:100%; padding:7px 12px; border-top:1px solid var(--border-subtle); }
+.ctp-code-folded .ctp-code-fold::before { content:''; position:absolute; inset:-22px 0 100%; background:linear-gradient(transparent,var(--bg-code)); pointer-events:none; }
+.ctp-copyright { margin:36px 0 24px; padding:12px 18px; border-inline-start:2px solid var(--border-strong); background:var(--bg-rail); color:var(--ink-secondary); font:14px/1.75 var(--font-sans); overflow-wrap:anywhere; }
+#post_next_prev:not(:empty) { padding:18px 0; border-block:1px solid var(--border-subtle); color:var(--ink-secondary); }
+/* The platform fills both comment slots after load. Keep native controls in place. */
+#blog-comments-placeholder, #comment_form { color:var(--ink-primary); overflow-wrap:anywhere; }
+#blog-comments-placeholder .feedbackItem, #comment_form .login_tips { padding:13px 16px; background:var(--bg-rail); border-bottom:1px solid var(--border-subtle); color:var(--ink-primary); }
+#blog-comments-placeholder :is(.feedbackListSubtitle,.comment_vote) { color:var(--ink-secondary); font-size:13px; }
+#blog-comments-placeholder a, #comment_form a { color:var(--link); text-decoration:underline; }
+#comment_form :is(.comment_textarea,textarea,input:not([type]),input[type="text"],select) { max-width:100%; background:var(--bg-rail); border:1px solid var(--border-strong); color:var(--ink-primary); font:inherit; }
+#comment_form textarea { width:100%; min-height:7em; padding:8px; resize:vertical; }
+#comment_form :is(.commentbox_title,.commentbox_footer) { border-color:var(--border-subtle); }
+#comment_form :is(.commentbox_tab,.commentbox_tab.active) { color:var(--ink-secondary); }
+#comment_form :is(button,input[type="submit"],#btn_comment_submit) { padding:6px 12px; border:1px solid var(--border-strong); border-radius:4px; background:var(--bg-rail); color:var(--ink-primary); cursor:pointer; }
+.ctp-progress { display:grid; grid-template-columns:1fr auto; align-items:center; gap:6px; padding-top:16px; color:var(--ink-secondary); font:12px var(--font-mono); }
+.ctp-top { justify-self:start; padding:4px 0; border:0; background:transparent; color:var(--ink-secondary); font:13px var(--font-sans); cursor:pointer; }
+.ctp-top:hover { color:var(--accent); }
+.ctp-progress progress { grid-column:1/-1; width:100%; height:3px; appearance:none; border:0; color:var(--accent); background:var(--border-rail-track); }
+.ctp-progress progress::-webkit-progress-bar { background:var(--border-rail-track); }
+.ctp-progress progress::-webkit-progress-value { background:var(--accent); }
+.ctp-progress progress::-moz-progress-bar { background:var(--accent); }
+.ctp-mobile-top { display:none; }
+@media (width < 960px) {
+  .ctp-mobile-top:not([hidden]) { display:block; position:fixed; z-index:32; right:16px; bottom:max(16px,env(safe-area-inset-bottom)); padding:6px 12px; background:var(--bg-rail); border:1px solid var(--border-strong); border-radius:6px; color:var(--ink-primary); font-size:14px; cursor:pointer; }
+}
+.ctp-resume { position:fixed; z-index:35; inset:auto auto 20px 50%; transform:translateX(-50%); display:flex; align-items:center; gap:12px; width:max-content; max-width:calc(100% - 28px); padding:8px 14px; border:1px solid var(--border-strong); border-radius:6px; color:var(--ink-primary); background:var(--bg-rail); font:13px/1.5 var(--font-sans); }
+.ctp-resume button { padding:4px 1px; color:var(--link); background:transparent; border:0; text-decoration:underline; cursor:pointer; }
+@media (width < 960px) { .ctp-resume { bottom:calc(max(16px,env(safe-area-inset-bottom)) + 48px); } }
+@media print {
+  :root, :root[data-theme] { color-scheme:light; --bg-canvas:white; --bg-code:white; --bg-rail:white; --bg-subtle:white; --ink-primary:#111; --ink-secondary:#333; --ink-muted:#444; --link:#111; --link-underline:#555; --border-subtle:#ccc; --border-strong:#aaa; }
+  html, body, #home, #mainContent { background:white !important; color:#111 !important; }
+  #home { opacity:1 !important; }
+  .ctp-nav, .ctp-rail, .ctp-drawer[open], .ctp-drawer::backdrop, .ctp-mobile-top, .ctp-mobile-toc, .ctp-resume, .ctp-code-head, .ctp-code-fold, #comment_form, #blog-comments-placeholder, #blog_post_info_block, #footer { display:none !important; }
+  #main { display:block; min-height:0; max-width:none; }
+  #mainContent, #mainContent > .forFlow { max-width:none !important; margin:0; padding:0; }
+  #cnblogs_post_body { color:#111; font-size:11pt; }
+  #cnblogs_post_body :is(h1,h2,h3,h4) { break-after:avoid; }
+  #cnblogs_post_body p { orphans:3; widows:3; }
+  #cnblogs_post_body pre, #cnblogs_post_body .ctp-code pre > code, #cnblogs_post_body .ctp-code pre * { color:#111 !important; white-space:pre-wrap; overflow-wrap:anywhere; }
+  #cnblogs_post_body .ctp-code pre, .ctp-table-scroll { max-height:none !important; overflow:visible; }
+  #cnblogs_post_body .ctp-table-scroll > table { width:100%; }
+}
