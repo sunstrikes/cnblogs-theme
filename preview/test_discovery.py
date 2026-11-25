@@ -132,7 +132,7 @@ def test_archive_nav_never_points_at_an_unpublished_month_while_sidebar_is_late(
       window.publishMonths=done; window.fetch=async(...a)=>{
         if(String(a[0]).includes('/ajax/sidebar-lists')) await wait; return load(...a); };""")
     archive = page.get_by_role('navigation', name='站点导航').get_by_text('归档')
-    assert archive.get_attribute('href') is None
+    expect(archive).to_have_attribute('href','/sample/p/archive/2025/06')
     page.evaluate('publishMonths()')
     expect(archive).to_have_attribute('href','/sample/p/archive/2025/06')
     archive.click()
@@ -161,3 +161,134 @@ def test_delayed_and_failed_months_do_not_block_each_other_or_native_posts(site_
     expect(page.get_by_role('region', name='2025年6月').get_by_role('link', name=FIRST, exact=True)).to_be_visible()
     page.evaluate('releaseMay()')
     expect(page.get_by_role('region', name='2025年5月').get_by_role('link', name=FOURTH)).to_be_visible()
+
+
+def test_home_receives_successive_native_day_groups_in_the_same_container(site_page):
+    # Keep the real native groups inert until two separate platform deliveries.
+    page = site_page(HOME, html=lambda s: s.replace('<div class="day"', '<template id="pending-days"><div class="day"', 1)
+                     .replace('<div class="topicListFooter">', '</template><div class="topicListFooter">', 1))
+    index = page.get_by_role('navigation', name='本页文章')
+    publish = "() => { const t = document.querySelector('#pending-days'); t.before(t.content.firstElementChild); }"
+    page.evaluate(publish)
+    expect(index.get_by_role('link')).to_have_text([FIRST, SECOND])
+    first_id = index.get_by_role('link').first.get_attribute('href')
+    # The platform can insert a group shell separately from its child posts.
+    page.evaluate('''async () => { const t = document.querySelector('#pending-days');
+        const shell = document.createElement('div'); shell.className = 'day'; t.before(shell);
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        shell.append(...Array.from(t.content.firstElementChild.children)); }''')
+    expect(index.get_by_role('link')).to_have_text([FIRST, SECOND, THIRD])
+    expect(page.get_by_role('article')).to_have_count(3)
+    expect(index.get_by_role('link').first).to_have_attribute('href', first_id)
+    index.get_by_role('link', name=THIRD).click()
+    expect(page.locator(':target')).to_contain_text(THIRD)
+    expect(page.get_by_role('navigation', name='分类筛选')).to_have_count(1)
+    expect(page.get_by_role('complementary').get_by_role('heading', name='公告')).to_have_count(1)
+
+
+def test_unrelated_native_widget_does_not_reveal_home_before_categories(site_page):
+    import json
+    from .site import FIXTURES
+    sidebar = json.loads((FIXTURES / 'sidebar-lists.json').read_text())
+    # Archive data is ready, but the only other sidebar child is an unrelated ranking.
+    sidebar['sideColumn'] = sidebar['sideColumn'][sidebar['sideColumn'].index('<div class="catListPostArchive'):]
+    page = site_page(HOME, routes={'/sample/ajax/sidebar-lists': ('application/json', json.dumps(sidebar))},
+        init="""const load = window.fetch; let resume; const next = new Promise(r => resume = r);
+        window.publishCategories = resume; window.fetch = async (...args) => {
+          if (String(args[0]).endsWith('/categories')) await next; return load(...args); };""")
+    expect(page.locator('#sidebar_topviewedposts')).to_be_attached()
+    assert page.locator('#home').evaluate('e => getComputedStyle(e).opacity') == '0'
+    page.evaluate('publishCategories()')
+    expect(page.get_by_role('navigation', name='分类筛选')).to_contain_text('样式实验')
+    expect(page.locator('#home')).to_have_css('opacity','1')
+
+
+def test_archive_navigation_without_month_widget_uses_only_published_evidence(site_page):
+    missing = {'/sample/ajax/sidebar-lists':('application/json','{"sideColumn":"","topLists":""}')}
+    # The month comes from the current archive, the publication date, or the native home document.
+    for path, month in [('/sample/p/archive/2025/05','05'),('/sample/p/1001','06'),('/sample/tag/','06')]:
+        page = site_page(path, routes=missing)
+        archive = page.get_by_role('navigation',name='站点导航').get_by_role('link',name='归档',exact=True)
+        expect(archive).to_have_attribute('href','/sample/p/archive/2025/' + month)
+        archive.click()
+        expect(page.locator('#mainContent .entrylistItemTitle').first).to_be_visible()
+    # With an empty/inaccessible home there is no month to assert; keep a truthful usable route.
+    page = site_page('/sample/tag/', routes={**missing, '/sample/':('text/html; charset=utf-8','<p>还没有文章</p>')})
+    expect(page.locator('#home')).to_have_css('opacity','1')
+    fallback = page.get_by_role('navigation',name='站点导航').get_by_role('link',name='返回首页',exact=True)
+    expect(fallback).to_have_attribute('href','/sample/')
+    fallback.click()
+    expect(page.get_by_text('还没有文章')).to_be_visible()
+
+
+def test_shared_keyword_is_only_inferred_as_category_unless_both_post_slots_name_it(site_page):
+    import json
+    from .site import FIXTURES
+    shared = '阅读笔记'
+    tags = (FIXTURES / 'tags.html').read_text().replace('>间距<', '>' + shared + '<')
+    accessories = json.loads((FIXTURES / 'post-accessories.json').read_text())
+    accessories['categoriesTags'] = accessories['categoriesTags'].replace('>排版<','>' + shared + '<').replace('%E6%8E%92%E7%89%88',shared)
+    page = site_page(init="""const load=window.fetch; let resume; const wait=new Promise(r=>resume=r);
+        window.publishPostSlots=resume; window.fetch=async(...args)=>{
+          if(String(args[0]).includes('post-accessories')) await wait; return load(...args); };""",
+        routes={'/sample/tag/':('text/html',tags), '/sample/ajax/post-accessories':('application/json',json.dumps(accessories))})
+    expect(page.locator('#home')).to_have_css('opacity','1')
+    header = page.locator('.postTitle + .ctp-post-meta')
+    expect(header).to_have_count(1)
+    expect(header).to_contain_text('分钟')
+    expect(header.get_by_role('navigation',name='文章分类').get_by_role('link')).to_have_text([shared])
+    post_tags = header.get_by_role('navigation',name='文章标签').get_by_role('link')
+    expect(post_tags).to_have_text(['排版'])
+    page.evaluate('publishPostSlots()')
+    expect(post_tags).to_have_text([shared])
+    expect(header.get_by_role('navigation',name='文章分类').get_by_role('link')).to_have_text([shared])
+
+
+def test_image_only_notices_keep_the_safe_image_link_and_fit_inside_rail(site_page):
+    import json
+    markup = ('<a href="/sample/categories" onclick="return false"><img src="/preview/fixtures/paper.svg" '
+              'alt="纸样目录" width="900" height="400" onload="void 0" style="width:900px"></a>'
+              '<img alt="无效协议" src="data:text/plain,bad">')
+    for options in [dict(init='window.THEME_CONFIG={notice:{html:' + json.dumps(markup) + '}}'),
+                    dict(routes={'/sample/ajax/news':('text/html','<div id="sidebar_news_content">' + markup + '</div>')})]:
+        page = site_page(HOME, **options)
+        notice = page.locator('.ctp-notice')
+        link = notice.get_by_role('link',name='纸样目录')
+        expect(link).to_be_visible()
+        img = link.get_by_role('img')
+        expect(img).to_have_attribute('loading','lazy')
+        expect(notice.locator('[onclick],[onload],[style],img[alt="无效协议"]')).to_have_count(0)
+        assert img.bounding_box()['width'] <= notice.bounding_box()['width']
+        link.click()
+        expect(page.locator('.category-block-title')).to_be_visible()
+
+
+def test_archive_parallel_limit_and_clicked_month_priority_survive_retry(site_page):
+    import json
+    from .site import FIXTURES
+    sidebar = json.loads((FIXTURES / 'sidebar-lists.json').read_text())
+    sidebar['sideColumn'] = sidebar['sideColumn'].replace('2025年5月(2)</a>', '2025年5月(2)</a>' + ''.join(
+        f'</li><li><a href="/sample/p/archive/2025/{n:02}">2025年{n}月(1)</a>' for n in [4,3,2,1]))
+    page = site_page('/sample/p/archive/2025/06', viewport={'width':1440,'height':2200},
+        routes={'/sample/ajax/sidebar-lists':('application/json',json.dumps(sidebar))},
+        init="""const load=window.fetch; window.monthCalls=[]; window.gates={};
+          window.fetch=async(href,...rest)=>{
+            const m=String(href).match(/archive\\/2025\\/(\\d\\d)$/);
+            if(!m) return load(href,...rest);
+            monthCalls.push(m[1]); await new Promise(resolve=>gates[m[1]]=resolve);
+            if(m[1]==='01' && monthCalls.filter(n=>n==='01').length===1) return new Response('',{status:503});
+            return load('/sample/p/archive/2025/05',...rest);
+          };""")
+    page.wait_for_function('monthCalls.length===3')
+    assert page.evaluate('monthCalls') == ['05','04','03']
+    page.get_by_role('navigation',name='归档月份').get_by_role('link',name='2025年1月').click()
+    page.evaluate("gates['05']()")
+    page.wait_for_function('monthCalls.length===4')
+    assert page.evaluate('monthCalls[3]') == '01'
+    page.evaluate("gates['01']()")
+    january = page.get_by_role('region',name='2025年1月')
+    january.get_by_role('button',name='重试').click()
+    page.evaluate("gates['04']()")
+    page.wait_for_function("monthCalls.filter(n=>n==='01').length===2")
+    page.evaluate("gates['01']()")
+    expect(january.get_by_role('link',name=THIRD,exact=True)).to_be_visible()

@@ -22,23 +22,14 @@
     native.before(title, timeline);
     const nav = node('nav','ctp-page-index'); nav.setAttribute('aria-label','归档月份');
     railBody.append(node('p','ctp-rail-title','按月浏览'), nav);
-    const records = new Map(), queue = [];
-    let active = 0;
-    function queueMonth(record, priority=false) {
-      if (record.state === 'queued' && priority) queue.splice(queue.indexOf(record), 1);
-      else if (record.state !== 'idle') return;
-      record.state = 'queued';
-      if (priority) queue.unshift(record); else queue.push(record);
-      drain();
-    }
-    async function drain() {
-      if (active >= 3 || !queue.length) return;
-      active++;
-      const r = queue.shift(); r.state = 'loading'; r.status.textContent = '正在加载文章…';
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 10000);
+    const records = new Map(), queue = data.monthQueue();
+    async function queueMonth(r, priority=false) {
+      if (r.state === 'ready' || r.state === 'error') return;
+      const response = queue.request(r.item.href, priority, () => { r.status.textContent = '正在加载文章…'; });
+      if (r.state === 'pending') return;
+      r.state = 'pending';
       try {
-        const entries = await data.entries(r.item.href, controller.signal);
+        const entries = await response;
         r.list.replaceChildren(...entries.map(renderPost));
         if (!entries.length) r.list.append(node('p','','本月暂无文章。'));
         r.state = 'ready';
@@ -49,7 +40,7 @@
         retry.onclick = () => { retry.remove(); r.state = 'idle'; queueMonth(r,true); };
         const direct = node('a','','打开原始月份'); direct.href = r.item.href;
         r.list.replaceChildren(r.status, retry, direct);
-      } finally { clearTimeout(timer); active--; drain(); }
+      }
     }
     const observer = new IntersectionObserver(entries => {
       for (const entry of entries) if (entry.isIntersecting) {
@@ -83,7 +74,7 @@
     const schedule = () => { if (!frame) frame = requestAnimationFrame(highlight); };
     window.addEventListener('scroll',schedule,{passive:true});
     if (months[0].key !== current.key) document.getElementById('ctp-month-' + current.key)?.scrollIntoView();
-    return () => { observer.disconnect(); window.removeEventListener('scroll',schedule); cancelAnimationFrame(frame); };
+    return () => { queue.dispose(); observer.disconnect(); window.removeEventListener('scroll',schedule); cancelAnimationFrame(frame); };
   }
   let stop;
   window.CTP.onPage(({content, railBody}) => {

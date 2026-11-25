@@ -82,3 +82,17 @@ def test_total_cdn_outage_keeps_the_parser_shell_and_reveals_native_text(site_pa
     expect(page.locator('html')).to_have_attribute('data-theme', 'mocha')
     expect(page.locator('#home')).to_have_css('opacity', '1', timeout=3000)
     expect(page.locator('#cnblogs_post_body')).to_contain_text('纸面实验')
+
+
+def test_body_waits_for_full_styles_not_just_the_parser_shell(site_page):
+    from .site import DIST
+    pending = []
+    page = site_page(wait_until='commit', before=lambda p: p.route('**/ctp-docs.min.css?*', lambda route: pending.append(route)))
+    expect(page.locator('#sidebar_postarchive li a').first).to_be_attached()
+    expect(page.locator('.ctp-toc li').first).to_be_attached()
+    page.evaluate('new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
+    assert page.locator('#main').evaluate('e => getComputedStyle(e).display') == 'block'
+    assert page.locator('#home').evaluate('e => getComputedStyle(e).opacity') == '0'
+    pending[0].fulfill(content_type='text/css', body=(DIST / CSS).read_bytes())
+    expect(page.locator('#main')).to_have_css('display','grid')
+    expect(page.locator('#home')).to_have_css('opacity','1')

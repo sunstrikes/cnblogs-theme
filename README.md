@@ -29,6 +29,10 @@ python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.0.0 --check
 
 如需指定站名或配色，把配置放在页首粘贴内容**之前**，例如 `<script>window.THEME_CONFIG = {siteName: '纸页手记', accent: 'teal'}</script>`。不填时跟随系统明暗，读者自己的选择优先。其余字段见[设计规格](docs/DESIGN-SPEC.md) §4.3。
 
+### 正文图片的延迟加载
+
+要让屏外图片等到读者接近时再下载，写文章时使用 `<img loading="lazy" src="图片地址" alt="图注">`。这种写法不依赖主题脚本。主题也支持只有 `data-src` 而没有 `src` 的图片，脚本加载后才会设置图片地址。博客园编辑器若只输出普通的 `<img src="…">`，浏览器可能在主题运行前就发出请求，脚本无法撤回。
+
 ## 样式加载失败或需要回滚
 
 主源出错后，加载器尝试备用地址，接下来一小时内优先使用备源。资源 URL 的 `?d=YYYYMMDDHH` 按 UTC 小时更新。两个 CSS 地址都失败但 JS 可用时，脚本会插入包内样式。相关场景可由[断网测试](preview/test_package.py)重现。

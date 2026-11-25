@@ -230,3 +230,18 @@ def test_print_open_mobile_drawer_in_dark_theme_outputs_only_the_unfolded_articl
     expect(page.get_by_text('纸面正文')).to_have_css('color','rgb(17, 17, 17)')
     expect(page.locator('#cnblogs_post_body pre')).to_have_css('max-height','none')
     expect(page.locator('#cnblogs_post_body')).to_be_visible()
+
+
+def test_offscreen_authored_images_are_requested_only_when_approached(site_page):
+    seen = set()
+    markup = ('<p style="height:9000px">长文</p>'
+              '<img alt="原生延迟图" loading="lazy" width="120" height="60" src="/images/native.svg">'
+              '<img alt="延迟源图" width="120" height="60" data-src="/images/deferred.svg">')
+    images = ['/images/native.svg', '/images/deferred.svg']
+    page = site_page(html=contents(markup), before=lambda p: p.on('request',lambda r: seen.add(r.url)),
+        routes={src:('image/svg+xml','<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60"/>') for src in images})
+    expect(page.locator('#home')).to_have_css('opacity','1')
+    assert not any(url.endswith(tuple(images)) for url in seen)
+    page.get_by_role('img', name='延迟源图').scroll_into_view_if_needed()
+    page.wait_for_function("[...document.querySelectorAll('#cnblogs_post_body img')].every(i=>i.naturalWidth>0)")
+    assert all(any(url.endswith(src) for url in seen) for src in images)

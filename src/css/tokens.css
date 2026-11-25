@@ -48,6 +48,7 @@ html[data-theme="latte"] {
   --ink-line-num: var(--ctp-overlay1);
 
   --accent: var(--ctp-mauve);
+  --accent-ink: #6c29c4;
   --accent-soft: rgba(136, 57, 239, 0.11);
   --link: var(--ctp-blue);
   --link-underline: rgba(30, 102, 245, 0.35);
@@ -90,6 +91,7 @@ html[data-theme="mocha"] {
   --ctp-sapphire: #74c7ec;
 
   --accent: var(--ctp-mauve);
+  --accent-ink: var(--accent);
   --accent-soft: rgba(203, 166, 247, 0.12);
   --link: var(--ctp-blue);
   --link-underline: rgba(137, 180, 250, 0.35);
@@ -107,4 +109,7 @@ html[data-accent="teal"] { --accent:#126c71; }
 html[data-accent="lavender"] { --accent:#4f58aa; }
 html[data-theme="mocha"][data-accent="teal"] { --accent:var(--ctp-teal); }
 html[data-theme="mocha"][data-accent="lavender"] { --accent:var(--ctp-lavender); }
+html:not([data-theme="mocha"])[data-accent="blue"] { --accent-ink:#174da9; }
+html:not([data-theme="mocha"])[data-accent="teal"] { --accent-ink:#11595d; }
+html:not([data-theme="mocha"])[data-accent="lavender"] { --accent-ink:#444b98; }
 :root { --font-sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Noto Sans SC','Microsoft YaHei',sans-serif; --font-mono:'JetBrains Mono','Maple Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }

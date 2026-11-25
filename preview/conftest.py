@@ -25,7 +25,7 @@ def browser():
 def site_page(browser):
     contexts = []
 
-    def visit(path=POST, *, html=None, init=None, fields=None, routes=None, before=None, cdn_status=None, **options):
+    def visit(path=POST, *, html=None, init=None, fields=None, routes=None, before=None, cdn_status=None, wait_until="load", **options):
         """`html` transforms rendered HTML; routes maps paths to (MIME, body) responses."""
         options.setdefault('viewport', {'width': 1440, 'height': 900})
         ctx = browser.new_context(**options)
@@ -61,7 +61,7 @@ def site_page(browser):
         page.set_default_timeout(3000)
         if before:
             before(page)
-        page.goto(ORIGIN + path)
+        page.goto(ORIGIN + path, wait_until=wait_until)
         return page
 
     yield visit

@@ -85,12 +85,37 @@ def test_saved_choice_wins_site_default_then_system_and_toggle_survives_reload(s
     expect(page.locator('.ctp-nav input[type=color]')).to_have_count(0)
 
 
+def contrast(link):
+    # Composite actual ancestor backgrounds (including translucent category pills), then WCAG luminance.
+    ink, background = link.evaluate(r"""a => {
+      const rgb = color => color.match(/[\d.]+/g).map(Number);
+      const layers = []; for (let el=a; el; el=el.parentElement) layers.unshift(rgb(getComputedStyle(el).backgroundColor));
+      const bg = layers.reduce((under, [r,g,b,alpha=1]) => [r,g,b].map((v,i) => v*alpha + under[i]*(1-alpha)), [255,255,255]);
+      return [rgb(getComputedStyle(a).color),bg]; }""")
+    def luminance(rgb):
+        values = (value/255 for value in rgb)
+        return sum(w * (v/12.92 if v <= 0.04045 else ((v+0.055)/1.055)**2.4)
+                   for w, v in zip((0.2126,0.7152,0.0722), values))
+    dark, light = sorted(map(luminance, (ink, background)))
+    return (light+0.05)/(dark+0.05)
+
+
 def test_rail_accent_is_configurable_but_not_a_nav_control(site_page):
     for accent, rgb in [('mauve','136, 57, 239'), ('blue','30, 102, 245'),
                        ('teal','18, 108, 113'), ('lavender','79, 88, 170')]:
         init = f"window.THEME_CONFIG={{accent:'{accent}'}}" if accent != 'mauve' else None
         page = site_page(init=init, color_scheme='light')
-        expect(page.get_by_role('navigation', name='文章目录').locator('[aria-current]')).to_have_css('color', f'rgb({rgb})')
+        active = page.get_by_role('navigation', name='文章目录').locator('[aria-current]')
+        expect(active).to_have_count(1)
+        assert active.evaluate("a => getComputedStyle(a, '::before').backgroundColor") == f'rgb({rgb})'
+        assert contrast(active) >= 4.5
+        page.goto('https://ctp.test/sample/')
+        for label in ('站点导航', '分类筛选'):
+            link = page.get_by_role('navigation', name=label).locator('a[aria-current]')
+            expect(link).to_have_count(1)
+            assert contrast(link) >= 4.5
+            link.hover()
+            assert contrast(link) >= 4.5
         expect(page.locator('.ctp-nav select, .ctp-nav input')).to_have_count(0)
 
 
@@ -147,3 +172,17 @@ def test_same_origin_navigation_adopts_static_bar_without_white_transition(brows
             assert page.evaluate('reveal') == {'transition':True, 'navs':1}
             for pseudo in ['old','new']:
                 assert page.evaluate("p => getComputedStyle(document.documentElement, `::view-transition-${p}(ctp-nav)`).animationName", pseudo) == 'none'
+
+
+def test_mobile_contents_button_only_opens_a_nonempty_contents_list(site_page):
+    from .test_reading import contents
+    page = site_page(viewport={'width':390,'height':844}, html=contents('<p>一段短笺</p>'))
+    button = page.get_by_role('button', name='目录', exact=True)
+    expect(page.locator('#home')).to_have_css('opacity', '1')
+    expect(button).to_be_hidden()
+    page.locator('#cnblogs_post_body').evaluate("e=>e.insertAdjacentHTML('beforeend','<h2>追加的标题</h2>')")
+    button.click()
+    expect(page.get_by_role('dialog').get_by_role('link',name='追加的标题')).to_be_visible()
+    page.locator('#cnblogs_post_body h2').evaluate('h => h.remove()')
+    expect(page.get_by_role('dialog')).to_be_hidden()
+    expect(button).to_be_hidden()
