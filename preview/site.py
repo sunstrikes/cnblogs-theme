@@ -1,5 +1,6 @@
 """Compose the native captured HTML with the two Cnblogs customization fields."""
 import mimetypes
+import re
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
@@ -15,26 +16,33 @@ PAGES = {
     '/sample/categories': 'categories.html', '/sample/post-categories': 'categories.html',
     '/sample/category/21.html': 'category-21.html', '/sample/category/22.html': 'category-22.html',
 }
-CSS = ('critical', 'tokens', 'layout', 'prose', 'pages')
+DIST = ROOT/'dist'
+CDNS = ('cdn.jsdelivr.net', 'fastly.jsdelivr.net')
 
 
-def source_fields():
-    # The platform embeds the critical field in the head: the new document's
-    # view-transition opt-in must already exist when the first frame is revealed.
-    critical = (ROOT / 'src/css/critical.css').read_text()
-    style = '<style>\n' + critical + '\n</style>\n'
-    style += ''.join(f'<link rel="stylesheet" href="/src/css/{name}.css">\n'
-                     for name in CSS if name != 'critical' and (ROOT / f'src/css/{name}.css').is_file())
-    modules = [p.relative_to(ROOT).as_posix() for part in ('core', 'data', 'ui')
-               for p in sorted((ROOT / 'src/js' / part).glob('*.js'))]
-    runtime = ''.join(f'<script defer src="/{p}"></script>\n' for p in modules)
-    template = ROOT / 'src/templates/head-loader.html'
-    head = template.read_text() if template.exists() else ''
-    return style, head.replace('<!-- CTP:LOADER -->', runtime)
+def dist_fields(*, inline=False, loopback=False):
+    style = DIST/('fallback/样式-内联备份.css' if inline else 'paste/样式.min.css')
+    head = (DIST/'paste/页首.html').read_text('utf-8')
+    if loopback:
+        # A manually opened page has no request interceptor. Alias only the
+        # two CDN origins; keep the generated path, cache key and loader intact.
+        for host in CDNS:
+            head = head.replace('https://' + host + '/', '/_cdn/' + host + '/')
+    return '<style>' + style.read_text('utf-8') + '</style>', head
+
+
+def cdn_resource(host, path):
+    if host not in CDNS or not re.fullmatch(r'/gh/[^/]+/[^/]+@[^/]+/dist/ctp-docs(?:\.min\.css|\.js)', path):
+        return None
+    file = DIST/path.rsplit('/', 1)[-1]
+    return ('text/css' if file.suffix == '.css' else 'application/javascript'), file.read_bytes()
 
 
 def render(filename, fields=None):
-    style, head = fields or source_fields()
+    style, head = fields or dist_fields()
+    # The platform adds defer to literal external script tags in the page-top
+    # field before parsing. Tags produced later by inline JS are not rewritten.
+    head = re.sub(r'<script\b(?=[^>]*\ssrc\s*=)', '<script defer', head, flags=re.IGNORECASE)
     native_script = '<script defer src="/preview/fixtures/async.js"></script>'
     return ((FIXTURES / filename).read_text()
             .replace('<!-- CTP:CSS -->', style).replace('<!-- CTP:HEAD -->', head)
@@ -44,6 +52,9 @@ def render(filename, fields=None):
 def resource(url, fields=None):
     request = urlsplit(url)
     path = unquote(request.path)
+    if path.startswith('/_cdn/'):
+        host, _, asset = path[len('/_cdn/'):].partition('/')
+        return cdn_resource(host, '/' + asset)
     if path == '/sample/ajax/news':
         return 'text/html; charset=utf-8', (FIXTURES / 'news.html').read_bytes()
     if path in ('/sample/ajax/post-accessories', '/sample/ajax/comments-block') and parse_qs(request.query).get('postId') == ['1001']:
@@ -56,6 +67,6 @@ def resource(url, fields=None):
             filename = 'home-page2.html'
         return 'text/html; charset=utf-8', render(filename, fields).encode()
     file = (ROOT / path.lstrip('/')).resolve()
-    if file.is_relative_to(ROOT) and path.startswith(('/src/', '/preview/fixtures/')) and file.is_file():
+    if file.is_relative_to(ROOT) and path.startswith('/preview/fixtures/') and file.is_file():
         return mimetypes.guess_type(file.name)[0] or 'application/octet-stream', file.read_bytes()
     return None

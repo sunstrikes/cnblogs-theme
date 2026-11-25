@@ -1,13 +1,14 @@
 """Drive real documents, including parser-time scripts, without network or sockets."""
 import os
-from urllib.parse import urlsplit
-from threading import Thread
 from http.server import ThreadingHTTPServer
-from .serve import Handler
+from threading import Thread
+from urllib.parse import urlsplit
 
 import pytest
 from playwright.sync_api import sync_playwright
-from .site import POST, resource
+
+from .serve import Handler
+from .site import CDNS, POST, cdn_resource, resource
 
 ORIGIN = 'https://ctp.test'
 
@@ -24,7 +25,7 @@ def browser():
 def site_page(browser):
     contexts = []
 
-    def visit(path=POST, *, html=None, init=None, fields=None, routes=None, before=None, **options):
+    def visit(path=POST, *, html=None, init=None, fields=None, routes=None, before=None, cdn_status=None, **options):
         """`html` transforms rendered HTML; routes maps paths to (MIME, body) responses."""
         options.setdefault('viewport', {'width': 1440, 'height': 900})
         ctx = browser.new_context(**options)
@@ -34,6 +35,14 @@ def site_page(browser):
 
         def respond(route):
             url = urlsplit(route.request.url)
+            if url.netloc in CDNS:
+                status = cdn_status(url) if cdn_status else 200
+                if status != 200:
+                    route.fulfill(status=status, body='CDN fixture unavailable'); return
+                asset = cdn_resource(url.netloc, url.path)
+                if asset:
+                    route.fulfill(content_type=asset[0], body=asset[1]); return
+                route.fulfill(status=404, body='Missing CDN fixture'); return
             if url.netloc != 'ctp.test':
                 route.abort()
                 return
@@ -71,3 +80,7 @@ def local_site():
         finally:
             server.shutdown()
             thread.join()
+
+
+def pytest_addoption(parser):
+    parser.addoption('--screenshots', metavar='DIR', help='write the rendered viewport matrix into DIR')

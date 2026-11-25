@@ -1,17 +1,17 @@
 """python3 preview/serve.py [--port 8000] [--open]"""
 import argparse
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import sys
-from pathlib import Path
 import webbrowser
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from preview.site import POST, resource
+from preview.site import POST, dist_fields, resource
 
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        data = resource(self.path)
+        data = resource(self.path, dist_fields(loopback=True))
         if data is None:
             self.send_error(404)
             return
