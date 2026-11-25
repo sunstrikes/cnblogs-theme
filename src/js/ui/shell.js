@@ -46,18 +46,25 @@
       matchMedia('(width < 960px)').addEventListener('change', () => { if (dialog.open) dialog.close(); });
       // The current calendar month may be empty (Cnblogs returns 404). Prefer the
       // latest published native month once the asynchronous sidebar fills in.
-      const items = Array.isArray(config.nav) ? config.nav : [null, { href:'/p/archive/{ym}' }];
-      const archive = Array.from(bar.querySelectorAll('.ctp-nav-links a')).find(a => items.some(item =>
-        item?.href?.includes('{ym}') && a.textContent === (item.label || '归档') && item.href.startsWith('/p/archive/')));
-      if (archive) {
+      const archives = [...bar.querySelectorAll('[data-month-template]')];
+      if (archives.length) {
         const resolveMonth = () => {
-          const match = Array.from(document.querySelectorAll('#sidebar_postarchive a')).map(a => /\/archive\/(\d{4})\/(0?[1-9]|1[0-2])(?:\/|\.html|$)/i.exec(a.pathname)).find(Boolean);
-          if (!match) return;
-          archive.href = home + 'p/archive/' + match[1] + '/' + match[2].padStart(2,'0');
+          const published = window.CTP.archive.months()[0];
+          if (!published) return;
+          for (const a of archives) {
+            const raw = a.dataset.monthTemplate.replace('{ym}',published.key.replace('-','/'));
+            let url;
+            try { url = new URL(raw.startsWith('/') && !raw.startsWith('//') ? home + raw.slice(1) : raw, location.origin + home); }
+            catch (_) { continue; }
+            if (!['https:', 'http:'].includes(url.protocol)) continue;
+            a.href = url.origin === location.origin ? url.pathname + url.search + url.hash : url.href;
+            a.removeAttribute('aria-disabled');
+            if (window.CTP.archive.month(location.href)) a.setAttribute('aria-current','page');
+          }
           observer.disconnect();
         };
         const observer = new MutationObserver(resolveMonth);
-        observer.observe(document.documentElement, {childList:true, subtree:true});
+        observer.observe(document.querySelector('#sideBar') || document.documentElement, {childList:true, subtree:true});
         resolveMonth();
       }
     }
