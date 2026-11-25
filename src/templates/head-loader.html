@@ -75,4 +75,40 @@
   setTimeout(() => root.classList.add('ctp-ready'), 1500);
 })();
 </script>
-<!-- CTP:LOADER -->
+<script>
+(() => {
+  const sources = ['{{PRIMARY}}', '{{MIRROR}}'];
+  const key = 'ctp:cdn-until:' + sources[0];
+  const now = Date.now();
+  const hour = new Date(now).toISOString().slice(0,13).replace(/[-T]/g,'');
+  const url = (host, asset) => sources[host] + asset + '?d=' + hour;
+  let first = 0;
+  try { if (Number(localStorage.getItem(key)) > now) first = 1; } catch (_) {}
+  function trip() {
+    try { localStorage.setItem(key, String(Date.now() + 3600000)); } catch (_) {}
+  }
+  window.CTP.stylesLoaded = new Promise(done => {
+    if (getComputedStyle(document.documentElement).getPropertyValue("--ctp-field").trim() === "1") { done(true); return; }
+    function style(host) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet'; link.href = url(host, 'ctp-docs.min.css');
+      link.onload = () => done(true);
+      link.onerror = () => {
+        if (host === 0) { trip(); style(1); } else done(false);
+      };
+      document.head.append(link);
+    }
+    style(first);
+  });
+  if (first === 0) {
+    document.addEventListener('error', function retry(event) {
+      if (event.target.id !== 'ctp-runtime') return;
+      document.removeEventListener('error', retry, true);
+      trip();
+      const script = document.createElement('script');
+      script.src = url(1, 'ctp-docs.js'); document.head.append(script);
+    }, true);
+  }
+  document.write('\x3cscr' + 'ipt defer id="ctp-runtime" src="' + url(first, 'ctp-docs.js') + '"\x3e\x3c/scr' + 'ipt\x3e');
+})();
+</script>
