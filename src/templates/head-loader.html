@@ -39,8 +39,8 @@
   for (const item of items) {
     if (!item || !item.label || typeof item.href !== 'string') continue;
     if (item.href.includes('{ym}')) {
-      const a = element('a','',item.label);
-      a.dataset.monthTemplate = item.href; a.setAttribute('aria-disabled','true');
+      const a = element('a','','返回首页');
+      a.href = home; a.dataset.monthTemplate = item.href; a.dataset.monthLabel = item.label;
       links.append(a); continue;
     }
     const raw = item.href;

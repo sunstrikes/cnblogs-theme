@@ -47,26 +47,18 @@
       // The current calendar month may be empty (Cnblogs returns 404). Prefer the
       // latest published native month once the asynchronous sidebar fills in.
       const archives = [...bar.querySelectorAll('[data-month-template]')];
-      if (archives.length) {
-        const resolveMonth = () => {
-          const published = window.CTP.archive.months()[0];
-          if (!published) return;
-          for (const a of archives) {
-            const raw = a.dataset.monthTemplate.replace('{ym}',published.key.replace('-','/'));
-            let url;
-            try { url = new URL(raw.startsWith('/') && !raw.startsWith('//') ? home + raw.slice(1) : raw, location.origin + home); }
-            catch (_) { continue; }
-            if (!['https:', 'http:'].includes(url.protocol)) continue;
-            a.href = url.origin === location.origin ? url.pathname + url.search + url.hash : url.href;
-            a.removeAttribute('aria-disabled');
-            if (window.CTP.archive.month(location.href)) a.setAttribute('aria-current','page');
-          }
-          observer.disconnect();
-        };
-        const observer = new MutationObserver(resolveMonth);
-        observer.observe(document.querySelector('#sideBar') || document.documentElement, {childList:true, subtree:true});
-        resolveMonth();
-      }
+      if (archives.length) window.CTP.archive.watchPublished(published => {
+        for (const a of archives) {
+          const raw = a.dataset.monthTemplate.replace('{ym}',published.key.replace('-','/'));
+          let url;
+          try { url = new URL(raw.startsWith('/') && !raw.startsWith('//') ? home + raw.slice(1) : raw, location.origin + home); }
+          catch (_) { continue; }
+          if (!['https:', 'http:'].includes(url.protocol)) continue;
+          a.href = url.origin === location.origin ? url.pathname + url.search + url.hash : url.href;
+          a.textContent = a.dataset.monthLabel;
+          if (window.CTP.archive.month(location.href)) a.setAttribute('aria-current','page');
+        }
+      });
     }
     tocButton.hidden = !article;
   });

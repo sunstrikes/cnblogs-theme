@@ -2,10 +2,7 @@
   'use strict';
   const cjk = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/gu;
   function readingStats(article, title) {
-    let meta = title.nextElementSibling;
-    if (!meta?.matches('.ctp-post-meta')) {
-      meta = document.createElement('div'); meta.className = 'ctp-post-meta'; title.after(meta);
-    }
+    const meta = window.CTP.postMeta(title);
     const stats = document.createElement('div'); stats.className = 'ctp-reading-stats';
     const date = document.querySelector('#post-date')?.textContent.trim().split(/\s+/)[0];
     if (date) {
@@ -53,6 +50,12 @@
     const rights = copyright(article, title, config.copyright);
     function prepare() {
       for (const img of article.querySelectorAll('img:not([loading])')) img.loading = 'lazy';
+      // Assign the source only after the browser knows this is a lazy image.
+      for (const img of article.querySelectorAll('img[data-src]:not([src]):not([srcset])')) {
+        let url;
+        try { url = new URL(img.dataset.src, document.baseURI); } catch (_) { continue; }
+        if (img.dataset.src.trim() && ['http:', 'https:'].includes(url.protocol)) img.src = url.href;
+      }
       for (const table of article.querySelectorAll('table')) {
         if (table.closest('.ctp-table-scroll,pre,code,.cnblogs_code,.syntaxhighlighter')) continue;
         const scroll = document.createElement('div'); scroll.className = 'ctp-table-scroll';

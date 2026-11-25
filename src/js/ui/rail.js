@@ -42,6 +42,7 @@
       if (next.length === headings.length && next.every((h,i) => h === headings[i] && text[i] === labels[i])) return;
       headings = next; labels = text; active = -1; selected = null;
       list.replaceChildren();
+      if (!headings.length) nav.closest('dialog')?.close();
       links = headings.map((heading,i) => {
         let id = heading.id || heading.querySelector(':scope > a[id]')?.id;
         if (!id) {

@@ -4,12 +4,13 @@
   function link(item) {
     const a = document.createElement('a'); a.href = item.href; a.textContent = item.name; return a;
   }
-  function categoryBar({content, home, config}) {
+  function categoryBar({content, home, config, pending}) {
     const first = content.querySelector('.day, .entrylistTitle:has(.category-crumb-item)');
     const options = config.categories;
     if (!first || !options.show) return;
     const bar = document.createElement('nav'); bar.className = 'ctp-category-bar'; bar.setAttribute('aria-label', '分类筛选');
-    let catalog = [], previous;
+    let catalog = [], complete = false, previous;
+    pending.push(() => complete || data.sidebarCategories().length > 0);
     function update() {
       if (!first.isConnected) return;
       const all = catalog.length ? catalog : data.sidebarCategories();
@@ -33,10 +34,10 @@
     }
     const observer = new MutationObserver(update);
     observer.observe(document.querySelector('#sideBar') || document.documentElement, {childList:true, subtree:true});
-    update(); data.categories().then(items => { catalog = items; update(); });
+    update(); data.categories().then(items => { complete = true; catalog = items; update(); });
     return () => observer.disconnect();
   }
-  function articleTaxonomy({content}) {
+  function articleTaxonomy({content, pending}) {
     const title = content.querySelector('#post_detail .postTitle');
     if (!title) return;
     const words = (document.querySelector('meta[name="keywords"]')?.content || '').split(/[,，]/).map(s => s.trim()).filter(Boolean);
@@ -46,13 +47,15 @@
       if (!title.isConnected) return;
       // Live post accessories are definitive. Keywords can also name collections;
       // when the post slots are absent, link only names with known taxonomy URLs.
-      const resolve = (selector, directory) => {
+      const resolve = (selector, directory, fallbackWords=words) => {
         const native = content.querySelector(selector);
         if (native) return data.parse(native, 'a[href]', false);
-        return words.map(s => directory.find(item => item.name === s)).filter(Boolean);
+        return fallbackWords.map(s => directory.find(item => item.name === s)).filter(Boolean);
       };
-      const items = [resolve('#BlogPostCategory', [...cats, ...data.sidebarCategories()]),
-                     resolve('#EntryTag', [...tags, ...data.sidebarTags()])];
+      const categories = resolve('#BlogPostCategory', [...cats, ...data.sidebarCategories()]);
+      const categoryNames = new Set(categories.map(item => item.name));
+      const items = [categories, resolve('#EntryTag', [...tags, ...data.sidebarTags()],
+        words.filter(name => !categoryNames.has(name)))];
       const signature = JSON.stringify(items);
       if (signature === previous) return;
       previous = signature;
@@ -65,11 +68,7 @@
         nav.append(...group.map(link)); groups.append(nav);
       }
       if (!groups.childElementCount) { groups.remove(); return; }
-      let header = title.nextElementSibling;
-      if (!header?.matches('.ctp-post-meta')) {
-        header = document.createElement('div'); header.className = 'ctp-post-meta'; title.after(header);
-      }
-      header.append(groups);
+      window.CTP.postMeta(title).append(groups);
     }
     const observer = new MutationObserver(records => {
       if (records.some(r => r.target.closest?.('#sideBar, #blog_post_info_block') ||
@@ -78,8 +77,10 @@
     observer.observe(document.querySelector('#main'), {childList:true, subtree:true});
     update();
     if (words.length) {
-      data.categories().then(result => { cats = result; update(); });
-      data.tags().then(result => { tags = result; update(); });
+      let catsDone = false, tagsDone = false;
+      pending.push(() => (catsDone || content.querySelector('#BlogPostCategory')) && (tagsDone || content.querySelector('#EntryTag')));
+      data.categories().then(result => { catsDone = true; cats = result; update(); });
+      data.tags().then(result => { tagsDone = true; tags = result; update(); });
     }
     return () => observer.disconnect();
   }
