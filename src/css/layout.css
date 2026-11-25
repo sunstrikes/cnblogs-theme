@@ -1,0 +1,52 @@
+*, *::before, *::after { box-sizing:border-box; }
+html, body, #home { color:var(--ink-primary); background:var(--bg-canvas); }
+body { margin:0 !important; padding:0 !important; font:16px/1.76 var(--font-sans); }
+button { font:inherit; }
+a { color:var(--link); }
+::selection { background:var(--selection-bg); }
+:focus-visible { outline:2px solid var(--focus-ring); outline-offset:3px; }
+#home { width:100%; max-width:none; margin:0; padding:0; }
+#main { display:grid; grid-template-columns:264px minmax(0,1fr); align-items:start; max-width:1360px; min-height:calc(100vh - 52px); margin:0 auto; padding:0; }
+#main > .clear { display:none; }
+#mainContent { grid-column:1 / -1; min-width:0; width:auto; margin:0; padding:44px clamp(24px,4.4vw,64px) 96px; float:none; }
+.ctp-rail ~ #mainContent { grid-column:2; }
+#mainContent > .forFlow { max-width:880px; margin:0 auto; min-width:0; }
+#mainContent:has(#post_detail) > .forFlow { max-width:840px; }
+.ctp-rail { grid-column:1; position:sticky; top:52px; display:flex; flex-direction:column; height:calc(100vh - 52px); padding:26px 18px 18px 22px; background:var(--bg-rail); border-inline:1px solid var(--border-subtle); }
+.ctp-rail-body { flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; }
+.ctp-rail-title { margin:0 0 15px; font-size:13px; font-weight:650; color:var(--ink-muted); }
+.ctp-toc ol { list-style:none; margin:0 0 0 2px; padding:0; border-inline-start:1px solid var(--border-rail-track); }
+.ctp-toc a { display:block; position:relative; padding:5px 7px 5px 14px; color:var(--ink-secondary); font-size:13.5px; line-height:1.5; text-decoration:none; overflow-wrap:anywhere; }
+.ctp-toc [data-level="3"] a { padding-inline-start:25px; }
+.ctp-toc [data-level="4"] a { padding-inline-start:36px; }
+.ctp-toc a:hover { color:var(--ink-primary); }
+.ctp-toc a[aria-current="location"] { color:var(--accent); font-weight:650; }
+.ctp-toc a[aria-current="location"]::before { content:''; width:3px; position:absolute; inset:4px auto 4px -2px; background:var(--accent); border-radius:2px; }
+#cnblogs_post_body :is(h1,h2,h3,h4), #cnblogs_post_body :is(h1,h2,h3,h4) a[id] { scroll-margin-top:76px; }
+.ctp-nav-links a:hover, .ctp-nav button:hover { background:var(--bg-subtle); border-radius:5px; }
+.ctp-nav-links a[aria-current] { color:var(--accent); font-weight:600; }
+#footer { padding:20px; border-top:1px solid var(--border-subtle); color:var(--ink-muted); font-size:12px; text-align:center; }
+@media (width < 960px) {
+  #main { display:flex; flex-direction:column; align-items:stretch; max-width:100%; }
+  .ctp-rail { display:none; }
+  #mainContent { padding:28px 20px 88px; max-width:100%; }
+}
+.ctp-mobile-toc { display:none; }
+.ctp-drawer { padding:0; color:var(--ink-primary); background:var(--bg-rail); border:1px solid var(--border-subtle); }
+.ctp-drawer::backdrop { background:rgb(17 17 27 / 38%); }
+.ctp-drawer[open] { display:flex; flex-direction:column; }
+.ctp-drawer[data-edge="right"] { inset:0 0 0 auto; margin:0; max-height:none; height:100dvh; max-width:85vw; width:320px; animation:ctp-slide-in .15s ease-out; }
+.ctp-drawer[data-edge="bottom"] { inset:auto 0 0; margin:0; max-height:70dvh; max-width:none; width:100%; border-radius:14px 14px 0 0; animation:ctp-rise-in .15s ease-out; }
+.ctp-drawer-head { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border-subtle); }
+.ctp-drawer button, .ctp-mobile-toc { padding:6px 12px; background:var(--bg-rail); border:1px solid var(--border-strong); color:var(--ink-primary); border-radius:6px; cursor:pointer; }
+.ctp-drawer-panel { padding:12px 22px max(22px,env(safe-area-inset-bottom)); overflow:auto; }
+.ctp-drawer .ctp-nav-links { display:flex; flex-direction:column; align-items:stretch; }
+.ctp-drawer .ctp-nav-links a { color:var(--ink-primary); text-decoration:none; }
+@keyframes ctp-slide-in { from { transform:translateX(100%); } }
+@keyframes ctp-rise-in { from { transform:translateY(100%); } }
+@media (width < 960px) {
+  .ctp-mobile-toc:not([hidden]) { display:inline-block; position:fixed; z-index:32; left:16px; bottom:max(16px,env(safe-area-inset-bottom)); font-size:14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ctp-drawer[open] { animation:none; }
+}
