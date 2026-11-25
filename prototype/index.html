@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="latte" data-accent="mauve">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROTOTYPE · ctp-docs 视觉原型验证 (WF-06)</title>
+  <link rel="stylesheet" href="./prototype.css" />
+</head>
+<body class="skin-custom">
+  <!-- Pre-rendered static topbar (mirrors cnblogs head HTML) -->
+  <nav class="ctp-nav" aria-label="主导航">
+    <div class="ctp-nav-inner">
+      <a class="ctp-brand" href="?page=home">ctp-docs</a>
+      <ul class="ctp-nav-links">
+        <li><a href="?page=home" data-nav="home">首页</a></li>
+        <li><a href="#archive" data-nav="archive">归档</a></li>
+        <li><a href="#categories" data-nav="categories">分类</a></li>
+        <li><a href="#tags" data-nav="tags">标签</a></li>
+      </ul>
+      <div class="ctp-nav-tools">
+        <button class="ctp-icon-btn" id="themeToggle" type="button">暗色模式</button>
+        <button class="ctp-icon-btn ctp-mobile-menu-btn" type="button">菜单</button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="home">
+    <div id="main">
+      <!-- LEFT RAIL: Post TOC (Reading Rail) -->
+      <aside class="ctp-rail" id="railPost" aria-label="文章目录">
+        <div class="ctp-rail-title">目录</div>
+        <div class="ctp-toc-scroll">
+          <ul class="ctp-toc-list">
+            <li class="ctp-toc-item lv-2"><a class="ctp-toc-link" href="#sec-1">为什么放弃浮空白卡</a></li>
+            <li class="ctp-toc-item lv-2 is-active"><a class="ctp-toc-link" href="#sec-2">Catppuccin 三阶平面分层</a></li>
+            <li class="ctp-toc-item lv-3"><a class="ctp-toc-link" href="#sec-2-1">Latte 浅色对比度红线</a></li>
+            <li class="ctp-toc-item lv-3"><a class="ctp-toc-link" href="#sec-2-2">代码块双引擎语法映射</a></li>
+            <li class="ctp-toc-item lv-2"><a class="ctp-toc-link" href="#sec-3">博客园真实 DOM 契约</a></li>
+            <li class="ctp-toc-item lv-2"><a class="ctp-toc-link" href="#sec-4">首帧防白闪与跨页过渡</a></li>
+          </ul>
+        </div>
+        <div class="ctp-rail-foot">
+          <div class="ctp-progress-row">
+            <button class="ctp-top-btn" type="button">↑ 回到顶部</button>
+            <span>42%</span>
+          </div>
+          <div class="ctp-progress-track"><div class="ctp-progress-fill"></div></div>
+        </div>
+      </aside>
+
+      <!-- LEFT RAIL: Home Notice + Index -->
+      <aside class="ctp-rail" id="railHome" aria-label="站点概览" style="display:none">
+        <div class="ctp-notice">
+          <div class="ctp-notice-name">关于这里</div>
+          <p>记录系统架构、AI 工程实践与前端设计思考。偏向长期主义的深度长文与可复现的代码笔记。</p>
+        </div>
+        <div class="ctp-rail-title">本页文章</div>
+        <div class="ctp-toc-scroll">
+          <ul class="ctp-toc-list">
+            <li class="ctp-toc-item lv-2 is-active"><a class="ctp-toc-link" href="?page=post">用三阶平面分层重塑博客园阅读体验</a></li>
+            <li class="ctp-toc-item lv-2"><a class="ctp-toc-link" href="?page=post">深入理解 Chromium 跨文档 View Transition</a></li>
+            <li class="ctp-toc-item lv-2"><a class="ctp-toc-link" href="?page=post">高吞吐推理引擎中的 KV Cache 内存布局</a></li>
+            <li class="ctp-toc-item lv-2"><a class="ctp-toc-link" href="?page=post">无构建工具的现代 CSS Token 架构实践</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main id="mainContent">
+        <!-- POST VIEW -->
+        <div class="ctp-article-shell" id="viewPost">
+          <article id="post_detail">
+            <h1 class="postTitle">用三阶平面分层重塑博客园长文阅读体验</h1>
+            <div class="ctp-post-meta">
+              <span>2026-11-25</span>
+              <span>约 8 分钟</span>
+              <span>3,420 字</span>
+              <a class="ctp-meta-cat" href="#categories">前端架构</a>
+              <span class="ctp-tag-group">
+                <a class="ctp-tag" href="#tags">Catppuccin</a>
+                <a class="ctp-tag" href="#tags">CSS Grid</a>
+                <a class="ctp-tag" href="#tags">设计系统</a>
+              </span>
+            </div>
+
+            <div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+              <h2 id="sec-1">为什么放弃浮空白卡</h2>
+              <p>大多数博客主题习惯在浅灰底色上堆叠圆角白卡与柔和阴影，再把公告、排行、标签云全部塞进右侧边栏。对于短消息流这很合理，但面对需要连续专注二十分钟的技术长文，视觉边框与四周噪音会不断打断阅读节奏。</p>
+
+              <h2 id="sec-2">Catppuccin 三阶平面分层</h2>
+              <p>Catppuccin 官方色板天然提供了 <code>Base</code>、<code>Mantle</code>、<code>Crust</code> 三层克制的背景阶梯，相邻明度差仅在 <code>1.07–1.17:1</code> 之间。利用这种微弱色阶，我们可以完全取消卡片阴影，把正文铺在 <code>Base</code> 连续画布上，左栏目录与代码块落在 <code>Mantle</code>，顶栏壳层落在 <code>Crust</code>。</p>
+
+              <blockquote>
+                <p>把大胆的视觉辨识度只花在一处——左栏标尺导轨（Reading Rail），其余界面保持安静与克制。</p>
+              </blockquote>
+
+              <h3 id="sec-2-1">Latte 浅色对比度红线</h3>
+              <p>实测表明，<code>Mocha</code> 暗底上 14 种强调色全部达到 WCAG AAA，但 <code>Latte</code> 浅底上只有 <code>Mauve</code> 与 <code>Red</code> 满足正文 AA 对比度。因此默认品牌色锁定 <a href="#sec-2">Mauve</a>，正文超链接则交由 <code>Blue</code> 配合克制下划线承担。</p>
+
+              <table>
+                <thead>
+                  <tr><th>语义层级</th><th>Catppuccin 角色</th><th>Latte</th><th>Mocha</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>主阅读画布</td><td>Base</td><td><code>#eff1f5</code></td><td><code>#1e1e2e</code></td></tr>
+                  <tr><td>左栏导轨 / 代码块</td><td>Mantle</td><td><code>#e6e9ef</code></td><td><code>#181825</code></td></tr>
+                  <tr><td>顶栏 / 代码块头部</td><td>Crust</td><td><code>#dce0e8</code></td><td><code>#11111b</code></td></tr>
+                </tbody>
+              </table>
+
+              <h3 id="sec-2-2">代码块双引擎语法映射</h3>
+              <div class="ctp-code">
+                <div class="ctp-code-head">
+                  <span>typescript</span>
+                  <button class="ctp-copy-btn" type="button">复制</button>
+                </div>
+                <pre><code><span class="tok-ln">1</span><span class="tok-cmt">// 根据系统偏好与本地缓存同步 Catppuccin 风味</span>
+<span class="tok-ln">2</span><span class="tok-kw">export function</span> <span class="tok-fn">resolveFlavor</span>(<span class="tok-par">stored</span>: <span class="tok-typ">string</span> <span class="tok-op">|</span> <span class="tok-bi">null</span>): <span class="tok-str">'latte'</span> <span class="tok-op">|</span> <span class="tok-str">'mocha'</span> {
+<span class="tok-ln">3</span>  <span class="tok-kw">if</span> (<span class="tok-par">stored</span> <span class="tok-op">===</span> <span class="tok-str">'latte'</span> <span class="tok-op">||</span> <span class="tok-par">stored</span> <span class="tok-op">===</span> <span class="tok-str">'mocha'</span>) <span class="tok-kw">return</span> <span class="tok-par">stored</span>;
+<span class="tok-ln">4</span>  <span class="tok-kw">const</span> <span class="tok-prp">prefersDark</span> <span class="tok-op">=</span> <span class="tok-bi">window</span>.<span class="tok-fn">matchMedia</span>(<span class="tok-str">'(prefers-color-scheme: dark)'</span>).<span class="tok-prp">matches</span>;
+<span class="tok-ln">5</span>  <span class="tok-kw">return</span> <span class="tok-prp">prefersDark</span> ? <span class="tok-str">'mocha'</span> : <span class="tok-str">'latte'</span>;
+<span class="tok-ln">6</span>}</code></pre>
+              </div>
+
+              <div class="ctp-callout-tip">
+                提示：<code>Latte</code> 浅色模式下代码注释采用 <code>Overlay 2</code>（<code>#7c7f93</code>），避免 <code>Overlay 0</code> 在浅灰代码底上发虚。
+              </div>
+
+              <h2 id="sec-3">博客园真实 DOM 契约</h2>
+              <p>由于博客园异步加载侧栏并把正文排在 DOM 前方，主题在生产代码中继续依赖 <code>#sideBar { display: contents }</code> 与 <code>--qb-field</code> 首帧闸门，确保首绘即终态且不破坏跨文档 View Transition。</p>
+            </div>
+
+            <div class="ctp-copyright">
+              <div class="ctp-copyright-row">
+                <span><strong>作者</strong> ctp-docs</span>
+                <span><strong>协议</strong> CC BY-NC-SA 4.0</span>
+              </div>
+              <div><strong>原文链接</strong> https://www.cnblogs.com/example/p/18429012.html</div>
+            </div>
+          </article>
+        </div>
+
+        <!-- HOME VIEW -->
+        <div class="ctp-list-shell" id="viewHome" style="display:none">
+          <div class="ctp-cat-bar" aria-label="分类筛选">
+            <a class="ctp-cat-pill is-active" href="#all">全部 <span class="ctp-cat-count">48</span></a>
+            <a class="ctp-cat-pill" href="#sys">系统架构 <span class="ctp-cat-count">16</span></a>
+            <a class="ctp-cat-pill" href="#ai">AI 工程 <span class="ctp-cat-count">14</span></a>
+            <a class="ctp-cat-pill" href="#fe">前端设计 <span class="ctp-cat-count">11</span></a>
+            <a class="ctp-cat-pill" href="#notes">随笔 <span class="ctp-cat-count">7</span></a>
+          </div>
+
+          <div class="day">
+            <div class="postTitle"><a href="?page=post">用三阶平面分层重塑博客园长文阅读体验</a></div>
+            <div class="postCon">告别灰底白卡与重阴影，利用 Catppuccin Base/Mantle/Crust 三层背景与左栏标尺导轨，为深度技术写作打造克制、温暖的数字花园。</div>
+            <div class="postDesc"><span>2026-11-25</span><span>前端设计</span><span>阅读 642</span><span>评论 12</span></div>
+          </div>
+
+          <div class="day">
+            <div class="postTitle"><a href="?page=post">深入理解 Chromium 跨文档 View Transition 与防白闪机制</a></div>
+            <div class="postCon">解析新文档提交前的 paint holding 机制，以及为什么 @view-transition 必须放在阻塞渲染的 custom.css 中才能让静态顶栏原地不动。</div>
+            <div class="postDesc"><span>2026-11-18</span><span>前端设计</span><span>阅读 1,284</span><span>评论 19</span></div>
+          </div>
+
+          <div class="day">
+            <div class="postTitle"><a href="?page=post">高吞吐推理引擎中的 KV Cache 分页内存布局剖析</a></div>
+            <div class="postCon">从物理显存块映射到多请求 Prefix Caching 命中路径，拆解长上下文并发推理下的带宽瓶颈与调度权衡。</div>
+            <div class="postDesc"><span>2026-11-09</span><span>AI 工程</span><span>阅读 2,190</span><span>评论 27</span></div>
+          </div>
+
+          <div class="day">
+            <div class="postTitle"><a href="?page=post">零依赖构建：用纯 Python 实现 CSS/JS 双形态分发流水线</a></div>
+            <div class="postCon">在无 Node 构建链的约束下，如何保持 CSS 压缩、内嵌回退包生成、小时级缓存键与版本一致性门禁的可靠性。</div>
+            <div class="postDesc"><span>2026-10-29</span><span>系统架构</span><span>阅读 875</span><span>评论 8</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="ctp-mobile-toc-fab" id="mobileTocBtn" type="button">目录</button>
+
+  <!-- Throwaway prototype control bar -->
+  <div class="proto-bar" aria-label="原型切换条">
+    <span>PROTOTYPE</span>
+    <button type="button" data-set-page="post">文章页</button>
+    <button type="button" data-set-page="home">首页</button>
+    <button type="button" data-set-theme="latte">Latte</button>
+    <button type="button" data-set-theme="mocha">Mocha</button>
+  </div>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const state = {
+        page: params.get('page') || 'post',
+        theme: params.get('theme') || 'latte',
+        accent: params.get('accent') || 'mauve',
+        clean: params.get('clean') === '1'
+      };
+
+      function apply() {
+        const html = document.documentElement;
+        html.setAttribute('data-theme', state.theme);
+        html.setAttribute('data-accent', state.accent);
+        if (state.clean) html.setAttribute('data-clean', '1');
+
+        const isPost = state.page === 'post';
+        document.getElementById('viewPost').style.display = isPost ? '' : 'none';
+        document.getElementById('railPost').style.display = isPost ? '' : 'none';
+        document.getElementById('viewHome').style.display = isPost ? 'none' : '';
+        document.getElementById('railHome').style.display = isPost ? 'none' : '';
+        document.getElementById('mobileTocBtn').style.display = isPost ? '' : 'none';
+
+        document.querySelectorAll('.ctp-nav-links a').forEach(a => {
+          a.classList.toggle('is-active', !isPost && a.dataset.nav === 'home');
+        });
+        document.getElementById('themeToggle').textContent = state.theme === 'latte' ? '切换暗色' : '切换浅色';
+
+        document.querySelectorAll('[data-set-page]').forEach(b => b.classList.toggle('on', b.dataset.setPage === state.page));
+        document.querySelectorAll('[data-set-theme]').forEach(b => b.classList.toggle('on', b.dataset.setTheme === state.theme));
+      }
+
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        state.theme = state.theme === 'latte' ? 'mocha' : 'latte';
+        apply();
+      });
+      document.querySelectorAll('[data-set-page]').forEach(b => b.addEventListener('click', () => { state.page = b.dataset.setPage; apply(); }));
+      document.querySelectorAll('[data-set-theme]').forEach(b => b.addEventListener('click', () => { state.theme = b.dataset.setTheme; apply(); }));
+      apply();
+    })();
+  </script>
+</body>
+</html>
