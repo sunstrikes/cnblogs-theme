@@ -4,9 +4,9 @@
 
 ## 1. 生成自己的发布包（本地）
 
-构建只需 Python 3 标准库。仓库附带的 `dist/` 使用**示例坐标 `example/ctp-docs`**，只供离线预览。安装前，需要一个由你维护的公开 GitHub 仓库，其根目录包含 `dist/`。默认命令 `python3 scripts/build.py --check` 可核对随附的示例产物。
+安装本仓库的主题可直接使用 [`dist/paste/`](dist/paste/) 中的两个文件，跳到下一节。页首从 `sunstrikes/cnblogs-theme` 的版本标签加载资源；运行 `python3 scripts/build.py --check` 可核对本地文件。
 
-把下面的 `OWNER/REPO` 改成该仓库，`REF` 改成准备发布的标签或分支名（不含 `/`）。在主题根目录运行：
+如果你要从自己的公开仓库分发，构建只需 Python 3 标准库。把下面的 `OWNER/REPO` 改成你的仓库，`REF` 改成准备发布的新标签（不含 `/`）。在主题根目录运行：
 
 ```sh
 REPO='OWNER/REPO'
@@ -19,9 +19,9 @@ python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.0.0 --check
 
 ## 2. 安装到博客园（博主手动操作）
 
-以下线上步骤需博主自行验证。默认页首中的示例坐标不能用于上线。先发布资源，确认能访问，再替换后台字段：
+以下步骤需博主登录博客园后台操作。先确认资源可访问，再替换后台字段：
 
-1. 将生成的 `dist/` 放到公开仓库所选 Git 版本的根目录。打开 `dist/paste/页首.html`，在两个 `…/dist/` 地址后分别补上 `ctp-docs.min.css` 和 `ctp-docs.js`，检查返回的是文件内容。
+1. 使用自有仓库时，先将生成的 `dist/` 随版本标签推送到 GitHub。打开 `dist/paste/页首.html`，在两个 `…/dist/` 地址后分别补上 `ctp-docs.min.css` 和 `ctp-docs.js`，检查返回的是文件内容。
 2. 备份当前皮肤、定制 CSS、页首和页脚 HTML。换用 `Custom` 皮肤，确认博客可以运行自定义 JavaScript；移除旧主题的脚本，保留无关内容。
 3. 把 `dist/paste/样式.min.css` 全文粘到 **页面定制 CSS 代码**，不加 `<style>` 标签。
 4. 把 `dist/paste/页首.html` 全文粘到 **页首 HTML 代码**。保存设置。本主题无需另贴页脚脚本。
