@@ -1,4 +1,4 @@
-/* ctp-docs v1.0.0 */
+/* ctp-docs v1.1.0 */
 (() => {
   'use strict';
   const api = window.CTP;

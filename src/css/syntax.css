@@ -1,0 +1,32 @@
+/* Catppuccin Prism and Highlight.js ports (MIT; catppuccin-syntax.LICENSE).
+   Scope styles to enhanced code so rich-text posts and other platform UI are unaffected.
+   Group selectors of equal precedence. Qualified Highlight.js roles override their base role. */
+#cnblogs_post_body .ctp-code code :is(.token.keyword,.token.important,.token.prolog,.token.doctype,.token.atrule,.hljs-keyword,.hljs-variable,.hljs-name,.hljs-selector-attr) { color:var(--ctp-mauve); }
+#cnblogs_post_body .ctp-code code :is(.token.builtin,.token.entity,.token.deleted,.hljs-built_in,.hljs-doctag,.hljs-emphasis,.hljs-strong,.hljs-deletion) { color:var(--ctp-red); }
+#cnblogs_post_body .ctp-code code :is(.token.class-name,.token.symbol,.token.attr-name,.token.namespace,.hljs-type,.hljs-selector-tag) { color:var(--ctp-yellow); }
+#cnblogs_post_body .ctp-code code :is(.token.function,.token.property,.token.tag,.token.selector,.hljs-title,.hljs-section,.hljs-attr,.hljs-selector-id) { color:var(--ctp-blue); }
+#cnblogs_post_body .ctp-code code :is(.token.boolean,.token.number,.token.constant,.hljs-literal,.hljs-number,.hljs-meta) { color:var(--ctp-peach); }
+#cnblogs_post_body .ctp-code code :is(.token.string,.token.char,.token.url,.token.attr-value,.token.inserted,.hljs-string,.hljs-attribute,.hljs-code,.hljs-quote,.hljs-addition) { color:var(--ctp-green); }
+#cnblogs_post_body .ctp-code code :is(.token.regex,.hljs-regexp) { color:var(--ctp-pink); }
+#cnblogs_post_body .ctp-code code :is(.token.operator,.hljs-operator) { color:var(--ctp-sky); }
+#cnblogs_post_body .ctp-code code :is(.token.variable,.hljs-params) { color:var(--ctp-text); }
+#cnblogs_post_body .ctp-code code :is(.token.punctuation,.token.comment,.hljs-comment) { color:var(--ctp-overlay2); }
+#cnblogs_post_body .ctp-code code :is(.token.cdata,.hljs-property,.hljs-tag,.hljs-bullet,.hljs-formula,.hljs-selector-class,.hljs-selector-pseudo) { color:var(--ctp-teal); }
+#cnblogs_post_body .ctp-code code :is(.hljs-punctuation) { color:var(--ctp-subtext1); }
+#cnblogs_post_body .ctp-code code :is(.hljs-subst) { color:var(--ctp-subtext0); }
+#cnblogs_post_body .ctp-code code :is(.hljs-symbol,.hljs-template-tag,.hljs-template-variable) { color:var(--ctp-flamingo); }
+#cnblogs_post_body .ctp-code code :is(.hljs-link) { color:var(--ctp-sapphire); }
+#cnblogs_post_body .ctp-code code :is(.hljs-variable.language_) { color:var(--ctp-mauve); }
+#cnblogs_post_body .ctp-code code :is(.hljs-title.class_) { color:var(--ctp-yellow); }
+#cnblogs_post_body .ctp-code code :is(.hljs-title.function_) { color:var(--ctp-blue); }
+#cnblogs_post_body .ctp-code code :is(.hljs-variable.constant_) { color:var(--ctp-peach); }
+#cnblogs_post_body .ctp-code code :is(.hljs-char.escape_) { color:var(--ctp-green); }
+#cnblogs_post_body .ctp-code code :is(.token.bold,.token.important,.hljs-strong) { font-weight:bold; }
+#cnblogs_post_body .ctp-code code :is(.token.italic,.hljs-emphasis,.hljs-quote,.hljs-link) { font-style:italic; }
+#cnblogs_post_body .ctp-code code .hljs-addition { background-color:color-mix(in srgb,var(--ctp-green) 15%,transparent); }
+#cnblogs_post_body .ctp-code code .hljs-deletion { background-color:color-mix(in srgb,var(--ctp-red) 15%,transparent); }
+/* Prism language-specific roles without a standard alias (an explicit alias wins). */
+#cnblogs_post_body .ctp-code code :where(.token.function-variable,.token.function-call) { color:var(--ctp-blue); }
+#cnblogs_post_body .ctp-code code :where(.token.parameter) { color:var(--ctp-maroon); }
+#cnblogs_post_body .ctp-code code :where(.token.macro) { color:var(--ctp-red); }
+#cnblogs_post_body .ctp-code code :where(.token.escape) { color:var(--ctp-pink); }

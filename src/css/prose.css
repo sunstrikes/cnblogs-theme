@@ -42,19 +42,6 @@
 #cnblogs_post_body .ctp-code :is(.cnb-code-toolbar,.cnb-over-length-code-block-toggler) { display:none; }
 #cnblogs_post_body .ctp-code .line-numbers { padding-inline-start:3.8em; }
 #cnblogs_post_body .ctp-code .line-numbers-rows > span::before, #cnblogs_post_body .ctp-code .hljs-ln-numbers { color:var(--ink-line-num); }
-/* Preserve the native highlighters' markup; map roles rather than theme sheet names. */
-#cnblogs_post_body .ctp-code :is(.hljs-keyword,.hljs-selector-tag,.hljs-doctag,.token.keyword,.token.atrule) { color:var(--ctp-mauve); }
-#cnblogs_post_body .ctp-code :is(.hljs-title,.hljs-section,.token.function,.token.function-variable) { color:var(--ctp-blue); }
-#cnblogs_post_body .ctp-code :is(.hljs-string,.hljs-addition,.token.string,.token.char,.token.attr-value,.token.inserted) { color:var(--ctp-green); }
-#cnblogs_post_body .ctp-code :is(.hljs-number,.hljs-literal,.hljs-symbol,.token.number,.token.constant,.token.boolean,.token.symbol) { color:var(--ctp-peach); }
-#cnblogs_post_body .ctp-code :is(.hljs-type,.hljs-title.class_,.token.class-name,.token.selector) { color:var(--ctp-yellow); }
-#cnblogs_post_body .ctp-code :is(.hljs-operator,.token.operator,.token.entity) { color:var(--ctp-sky); }
-#cnblogs_post_body .ctp-code :is(.hljs-params,.hljs-variable,.token.parameter,.token.variable) { color:var(--ctp-maroon); }
-#cnblogs_post_body .ctp-code :is(.hljs-built_in,.hljs-meta,.hljs-deletion,.token.builtin,.token.macro,.token.tag,.token.deleted) { color:var(--ctp-red); }
-#cnblogs_post_body .ctp-code :is(.hljs-regexp,.hljs-char.escape_,.token.regex,.token.escape) { color:var(--ctp-pink); }
-#cnblogs_post_body .ctp-code :is(.hljs-attr,.hljs-attribute,.token.property,.token.attr-name) { color:var(--ctp-teal); }
-#cnblogs_post_body .ctp-code :is(.hljs-comment,.hljs-quote,.token.comment,.token.prolog,.token.doctype,.token.cdata) { color:var(--ink-code-comment); }
-#cnblogs_post_body .ctp-code :is(.hljs-punctuation,.token.punctuation) { color:var(--ink-secondary); }
 #cnblogs_post_body .ctp-code-folded pre { max-height:calc(28px + var(--visible-lines) * 1.65em); overflow-y:hidden; }
 .ctp-code-fold { position:relative; display:block; width:100%; padding:7px 12px; border-top:1px solid var(--border-subtle); }
 .ctp-code-folded .ctp-code-fold::before { content:''; position:absolute; inset:-22px 0 100%; background:linear-gradient(transparent,var(--bg-code)); pointer-events:none; }

@@ -51,8 +51,7 @@
 ### 2.3 代码块与引用/提示块配色
 
 - **容器**：`Mantle` 代码底 + `Crust` 36px 精简顶栏（左侧语言名称、右侧复制按钮）+ `1px` `Surface 0` 边框；超过 34 行（可配置）默认折叠并附渐变遮罩展开按钮。
-- **双引擎语法高亮**：同时覆写博客园 Highlight.js（`.hljs-*`）与 Prism（`.token.*`），完整映射 Catppuccin 官方 14 类 Syntax Token：
-  - 关键字 `Mauve` · 函数 `Blue` · 字符串 `Green` · 数字/常量 `Peach` · 类型/类名 `Yellow` · 运算符 `Sky` · 参数 `Maroon` · 内置/宏 `Red` · 正则/转义 `Pink` · 属性 `Teal` · 注释 `Overlay 2` · 默认代码 `Text`。
+- **双引擎语法高亮**：以 [Prism 与 Highlight.js 各自的 Catppuccin 配色定义](../README.md#代码高亮)为准，覆盖语法角色、粗体、斜体和差异标记。保留博客园分词、行号与复制源文本；Python 点号方法调用补上函数色，不对纯文本、字符串或注释二次分词。
 - **引用块与语义提示块**：左侧 `3px` 语义色条（引用用主 Accent，Success 用 `Green`，Info 用 `Blue`，Tip 用 `Teal`，Warning 用 `Yellow`，Danger 用 `Red`）+ `Mantle` 或 8%–10% 柔和透明底 + `Text` 正文。
 
 ---
@@ -109,6 +108,7 @@ my-theme/
 │   │   ├── tokens.css           # Latte & Mocha 26色 + 语义 Token + 4 Accent
 │   │   ├── critical.css         # --ctp-field:2 首帧闸门 + 52px顶栏骨架 + @view-transition
 │   │   ├── layout.css           # 1360px 居中两栏工作台 + Reading Rail + 960px 响应式
+│   │   ├── syntax.css           # 两种引擎的语法角色与字体样式
 │   │   ├── prose.css            # 正文、表格、引用/提示块、双引擎代码块、版权块
 │   │   └── pages.css            # 首页列表、分类条、归档时间线、标签网格、评论区、打印
 │   ├── js/

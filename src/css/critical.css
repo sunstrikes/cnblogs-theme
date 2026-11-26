@@ -1,4 +1,4 @@
-/* ctp-docs v1.0.0: blocking styles for the Cnblogs custom CSS field. */
+/* ctp-docs v1.1.0: blocking styles for the Cnblogs custom CSS field. */
 @view-transition { navigation: auto; }
 :root { --ctp-field:2; --ctp-first-canvas:#eff1f5; --ctp-first-chrome:#dce0e8; --ctp-first-ink:#4c4f69; --ctp-first-line:#ccd0da; color-scheme:light; }
 :root[data-theme="mocha"] { --ctp-first-canvas:#1e1e2e; --ctp-first-chrome:#11111b; --ctp-first-ink:#cdd6f4; --ctp-first-line:#313244; color-scheme:dark; }

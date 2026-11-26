@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / 'src'
-CSS = ('critical', 'tokens', 'layout', 'prose', 'pages')
+CSS = ('critical', 'tokens', 'layout', 'prose', 'syntax', 'pages')
 
 
 def compact(css):
@@ -49,8 +49,10 @@ def files(repo, ref, version):
         head = head.replace(
             '{{' + token + '}}', f'https://{host}.jsdelivr.net/gh/{repo}@{ref}/dist/'
         )
-    css = '\n'.join([critical, *layers])
-    small = compact(css)
+    notice = '/*!\n' + (SRC / 'css/catppuccin-syntax.LICENSE').read_text('utf-8').strip() + '\n*/\n'
+    layers_css = '\n'.join([critical, *layers])
+    css = notice + layers_css
+    small = notice + compact(layers_css)
     js = '\n'.join(
         p.read_text('utf-8')
         for part in ('core', 'data', 'ui')

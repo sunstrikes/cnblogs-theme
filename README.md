@@ -10,9 +10,9 @@
 
 ```sh
 REPO='OWNER/REPO'
-REF='v1.0.0'
-python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.0.0
-python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.0.0 --check
+REF='v1.1.0'
+python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.1.0
+python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.1.0 --check
 ```
 
 [`--check`](scripts/build.py) 逐字节比较产物，不写入文件。`--version` 校验 CSS 和 JS 源码中的版本，`--ref` 决定两个 CDN 地址指向的 Git 版本。其他输出目录可用 `--out` 指定。版本不符或产物改动时，先核对参数并重新生成，再发布。
@@ -28,6 +28,12 @@ python3 scripts/build.py --repo "$REPO" --ref "$REF" --version 1.0.0 --check
 5. 打开有小标题的文章。宽屏应显示左栏目录；点顶栏的 Latte 或 Mocha 按钮后刷新，主题应保留。浏览器网络面板应看到主题 CSS、JS 请求，地址中含你的仓库和 Git 版本。
 
 如需指定站名或配色，把配置放在页首粘贴内容**之前**，例如 `<script>window.THEME_CONFIG = {siteName: '纸页手记', accent: 'teal'}</script>`。不填时跟随系统明暗，读者自己的选择优先。其余字段见[设计规格](docs/DESIGN-SPEC.md) §4.3。
+
+### 代码高亮
+
+在博客园后台选择 `prismjs` 或 `highlight.js`，**取消勾选「禁用默认代码高亮」**。博客园负责识别语言和语法，主题按 [Prism 配色定义](https://github.com/catppuccin/prismjs/blob/d5cddefcc6f2190f5396d56b42f1f0927d64f6bb/prismjs.tera) 或 [Highlight.js 配色定义](https://github.com/catppuccin/highlightjs/blob/79a8accb89c5a94010ed3968cb2b04c3d679b6ba/sass/_theme.scss) 着色。两种引擎的角色和颜色不完全相同；切换 Latte / Mocha 不需要重新渲染代码。
+
+主题还会把 Python 代码中 `F.softmax(x)` 的 `softmax` 标成函数色，字符串、注释和未调用的 `F.softmax` 不变。无需另贴页脚脚本；从旧版升级时可以移除先前单独添加的 Python 方法着色脚本。未标注语言或引擎未识别的内容不保证有语法色。
 
 ### 正文图片的延迟加载
 
